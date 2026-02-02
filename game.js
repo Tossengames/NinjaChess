@@ -36,11 +36,18 @@ function startGame() {
   };
   currentPlayer = 1;
   gameOver = false;
-  endOverlay.classList.add("hidden");
+  selected = null;
+  highlights = [];
+  
+  // FIX: hide overlay so it doesn’t block clicks
+  endOverlay.classList.add("hidden"); 
+  
   initBoard();
   switchScreen("game");
   updateTurnInfo();
-  if (players[currentPlayer].type === "ai") aiTurn();
+  render();
+  
+  if(players[currentPlayer].type === "ai") aiTurn();
 }
 
 function initBoard() {
@@ -88,21 +95,21 @@ function render() {
 }
 
 function onCell(x, y, cell) {
-  if (gameOver || players[currentPlayer].type !== "human") return;
+  if(gameOver || players[currentPlayer].type !== "human") return;
   const u = board[y][x];
 
-  if (selected && highlights.some(h => h.x===x && h.y===y)) {
+  if(selected && highlights.some(h => h.x===x && h.y===y)) {
     executeMove(selected, x, y);
     return;
   }
 
-  if (u && u.p === currentPlayer) {
+  if(u && u.p === currentPlayer) {
     selected = u;
     highlights = legalMoves(u);
     render();
   } else {
     cell.classList.add("shake");
-    setTimeout(()=>cell.classList.remove("shake"), 200);
+    setTimeout(()=>cell.classList.remove("shake"),200);
   }
 }
 
