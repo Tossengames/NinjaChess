@@ -6,17 +6,22 @@ body {
   text-align: center;
 }
 
-.screen { display: none; padding: 20px; }
+.screen { display: none; padding: 15px; }
 .screen.active { display: block; }
 
 button {
-  padding: 12px 20px;
-  margin-top: 20px;
-  font-size: 16px;
+  padding: 8px 14px;
+  font-size: 14px;
+}
+
+#topBar {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
 }
 
 #board {
-  margin: 20px auto;
+  margin: 10px auto;
   display: grid;
   grid-template-columns: repeat(7, 52px);
   gap: 2px;
@@ -33,11 +38,39 @@ button {
   cursor: pointer;
 }
 
+.p1 { color: #4fc3f7; }
+.p2 { color: #ef5350; }
+
 .cell.move { background: #2e7d32; }
 .cell.capture { background: #8b0000; }
 
-.unit.selected { transform: scale(1.2); }
+.shake {
+  animation: shake 0.2s;
+}
 
-#info {
-  margin-bottom: 10px;
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-3px); }
+  50% { transform: translateX(3px); }
+  100% { transform: translateX(0); }
+}
+
+.hidden { display: none; }
+
+#infoPanel {
+  background: #222;
+  padding: 10px;
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+#endOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  color: #fff;
+  font-size: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
