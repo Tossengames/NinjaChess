@@ -36,6 +36,7 @@ button {
   justify-content: center;
   font-size: 28px;
   cursor: pointer;
+  transition: background 0.2s;
 }
 
 .p1 { color: #4fc3f7; }
@@ -70,4 +71,5 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
+  pointer-events: none;
 }
