@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Feudal Grid Game</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="menu" class="screen active">
+  <h1>Feudal Grid</h1>
+  <button onclick="goPrep()">Start</button>
+</div>
+
+<div id="prep" class="screen">
+  <h2>Preparation</h2>
+
+  <div>
+    Player 1:
+    <select id="p1">
+      <option value="human">Human</option>
+      <option value="ai">AI</option>
+    </select>
+  </div>
+
+  <div>
+    Player 2:
+    <select id="p2">
+      <option value="ai">AI</option>
+      <option value="human">Human</option>
+    </select>
+  </div>
+
+  <button onclick="startGame()">Begin</button>
+</div>
+
+<div id="game" class="screen">
+  <div id="info"></div>
+  <div id="board"></div>
+</div>
+
+<script src="game.js"></script>
+</body>
+</html>
