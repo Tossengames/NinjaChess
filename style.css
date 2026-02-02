@@ -44,10 +44,7 @@ button {
 .cell.move { background: #2e7d32; }
 .cell.capture { background: #8b0000; }
 
-.shake {
-  animation: shake 0.2s;
-}
-
+.shake { animation: shake 0.2s; }
 @keyframes shake {
   0% { transform: translateX(0); }
   25% { transform: translateX(-3px); }
