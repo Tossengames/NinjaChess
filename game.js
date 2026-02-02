@@ -1,11 +1,12 @@
 const screens = {
-  menu: document.getElementById("menu"),
-  prep: document.getElementById("prep"),
-  game: document.getElementById("game")
+  menu: menu,
+  prep: prep,
+  game: game
 };
 
 const boardEl = document.getElementById("board");
-const infoEl = document.getElementById("info");
+const turnInfo = document.getElementById("turnInfo");
+const endOverlay = document.getElementById("endOverlay");
 
 const EMOJI = {
   daimyo: "👑",
@@ -15,48 +16,46 @@ const EMOJI = {
 };
 
 let board, players, currentPlayer;
-let selected = null;
-let highlights = [];
+let selected = null, highlights = [];
+let gameOver = false;
 
-function show(name) {
-  Object.values(screens).forEach(s => s.classList.remove("active"));
+function showPrep(){ switchScreen("prep"); }
+
+function switchScreen(name){
+  Object.values(screens).forEach(s=>s.classList.remove("active"));
   screens[name].classList.add("active");
 }
 
-function goPrep() { show("prep"); }
-
-function startGame() {
+function startGame(){
   players = {
     1: { type: p1.value, dir: -1 },
     2: { type: p2.value, dir: 1 }
   };
   currentPlayer = 1;
+  gameOver = false;
   initBoard();
-  show("game");
-  updateInfo();
-  if (players[currentPlayer].type === "ai") aiTurn();
+  switchScreen("game");
+  updateTurnInfo();
+  if(players[currentPlayer].type==="ai") aiTurn();
 }
 
-function initBoard() {
-  board = Array.from({ length: 7 }, () => Array(7).fill(null));
+function initBoard(){
+  board = Array.from({length:7},()=>Array(7).fill(null));
   boardEl.innerHTML = "";
 
-  for (let y = 0; y < 7; y++) {
-    for (let x = 0; x < 7; x++) {
-      const c = document.createElement("div");
-      c.className = "cell";
-      c.onclick = () => clickCell(x, y);
+  for(let y=0;y<7;y++){
+    for(let x=0;x<7;x++){
+      const c=document.createElement("div");
+      c.className="cell";
+      c.onclick=()=>onCell(x,y,c);
       boardEl.appendChild(c);
     }
   }
 
-  const setup = [
-    ["ashigaru",0],["samurai",1],["daimyo",3],["samurai",5],["ashigaru",6]
-  ];
-
-  setup.forEach(s => {
-    place(1, s[0], s[1], 6);
-    place(2, s[0], s[1], 0);
+  const back=[["ashigaru",0],["samurai",1],["daimyo",3],["samurai",5],["ashigaru",6]];
+  back.forEach(s=>{
+    place(1,s[0],s[1],6);
+    place(2,s[0],s[1],0);
   });
 
   place(1,"ninja",2,5); place(1,"ashigaru",3,5); place(1,"ninja",4,5);
@@ -67,15 +66,15 @@ function initBoard() {
 
 function place(p,t,x,y){ board[y][x]={p,t,x,y}; }
 
-function render() {
-  document.querySelectorAll(".cell").forEach((c,i)=>{
-    const x=i%7, y=Math.floor(i/7);
+function render(){
+  [...boardEl.children].forEach((c,i)=>{
+    const x=i%7,y=Math.floor(i/7);
     c.className="cell";
     c.textContent="";
     const u=board[y][x];
     if(u){
       c.textContent=EMOJI[u.t];
-      if(u===selected) c.classList.add("selected");
+      c.classList.add(u.p===1?"p1":"p2");
     }
   });
 
@@ -85,14 +84,13 @@ function render() {
   });
 }
 
-function clickCell(x,y){
-  if(players[currentPlayer].type!=="human") return;
+function onCell(x,y,cell){
+  if(gameOver || players[currentPlayer].type!=="human") return;
 
   const u=board[y][x];
 
   if(selected && highlights.some(h=>h.x===x&&h.y===y)){
-    move(selected,x,y);
-    endTurn();
+    executeMove(selected,x,y);
     return;
   }
 
@@ -100,6 +98,9 @@ function clickCell(x,y){
     selected=u;
     highlights=legalMoves(u);
     render();
+  } else {
+    cell.classList.add("shake");
+    setTimeout(()=>cell.classList.remove("shake"),200);
   }
 }
 
@@ -120,14 +121,14 @@ function legalMoves(u){
         if(dx||dy) add(u.x+dx,u.y+dy);
 
   if(u.t==="samurai"){
-    add(u.x,u.y+d); add(u.x-1,u.y); add(u.x+1,u.y);
+    add(u.x+1,u.y); add(u.x-1,u.y);
+    add(u.x,u.y+1); add(u.x,u.y-1);
   }
 
-  if(u.t==="ninja"){
+  if(u.t==="ninja")
     for(let dx=-2;dx<=2;dx++)
       for(let dy=-2;dy<=2;dy++)
         if(dx||dy) add(u.x+dx,u.y+dy);
-  }
 
   if(u.t==="ashigaru"){
     add(u.x,u.y+d);
@@ -138,29 +139,36 @@ function legalMoves(u){
   return res;
 }
 
-function move(u,x,y){
+function executeMove(u,x,y){
   const target=board[y][x];
   board[u.y][u.x]=null;
 
   if(target && target.t==="daimyo"){
-    infoEl.textContent=`Player ${u.p} wins`;
+    endGame(u.p);
     return;
   }
 
   u.x=x; u.y=y;
   board[y][x]=u;
+  endTurn();
 }
 
 function endTurn(){
   selected=null; highlights=[];
   currentPlayer=currentPlayer===1?2:1;
-  updateInfo();
+  updateTurnInfo();
   render();
   if(players[currentPlayer].type==="ai") aiTurn();
 }
 
-function updateInfo(){
-  infoEl.textContent=`Player ${currentPlayer} turn`;
+function updateTurnInfo(){
+  turnInfo.textContent=`Player ${currentPlayer} (${players[currentPlayer].type}) turn`;
+}
+
+function endGame(winner){
+  gameOver=true;
+  endOverlay.textContent=`Player ${winner} Wins`;
+  endOverlay.classList.remove("hidden");
 }
 
 function aiTurn(){
@@ -172,7 +180,10 @@ function aiTurn(){
     });
     if(!moves.length) return;
     const pick=moves[Math.floor(Math.random()*moves.length)];
-    move(pick.u,pick.m.x,pick.m.y);
-    endTurn();
-  },400);
+    executeMove(pick.u,pick.m.x,pick.m.y);
+  },500);
+}
+
+function toggleInfo(){
+  infoPanel.classList.toggle("hidden");
 }
