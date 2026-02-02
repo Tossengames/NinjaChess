@@ -3,22 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Feudal Grid</title>
+  <title>Feudal Tactical Grid</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div id="menu" class="screen active">
-  <h1>Feudal Grid</h1>
-  <button onclick="showPrep()">Start</button>
+  <h1>Feudal Tactical Grid</h1>
+  <button onclick="showPrep()">Start Game</button>
 </div>
 
 <div id="prep" class="screen">
   <h2>Preparation</h2>
-  <div>Player 1:
+  <div>
+    Player 1:
     <select id="p1"><option value="human">Human</option><option value="ai">AI</option></select>
   </div>
-  <div>Player 2:
+  <div>
+    Player 2:
     <select id="p2"><option value="ai">AI</option><option value="human">Human</option></select>
   </div>
   <button onclick="startGame()">Begin</button>
@@ -29,21 +31,18 @@
     <span id="turnInfo"></span>
     <button onclick="toggleInfo()">?</button>
   </div>
-
   <div id="board"></div>
-
   <div id="infoPanel" class="hidden">
     <h3>How to Play</h3>
-    <p>Tap a unit → see legal moves → tap destination.</p>
-    <p><b>Win:</b> Capture the enemy Daimyo 👑</p>
+    <p>Tap a unit to see its legal moves, then tap a tile to move.</p>
     <ul>
-      <li>👑 Daimyo: moves 1 tile any direction</li>
-      <li>🗡️ Samurai: 1 tile orthogonal</li>
-      <li>🥷 Ninja: up to 2 tiles any direction</li>
-      <li>🛡️ Ashigaru: forward, capture diagonally</li>
+      <li>👑 Daimyo: 1 tile any direction (protect at all costs)</li>
+      <li>🗡️ Samurai: 1 tile orthogonal, guard & capture</li>
+      <li>🥷 Ninja: up to 2 tiles any direction, flexible</li>
+      <li>🛡️ Ashigaru: forward, diagonal captures, sacrificial units</li>
     </ul>
+    <p><b>Goal:</b> Capture the enemy Daimyo or trap them with no legal moves.</p>
   </div>
-
   <div id="endOverlay" class="hidden"></div>
 </div>
 
